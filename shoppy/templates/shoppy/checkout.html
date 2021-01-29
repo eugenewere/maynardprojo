@@ -1,0 +1,320 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <style>
+        @media screen and (max-width:768px) {
+                #main-sidebar-checkout{
+                    display: none;
+                }
+
+            }
+    </style>
+{% endblock links %}
+
+{% block content %}
+        <div id="sidebar-js" style="height:70%; right: -200%; z-index: 2222; " class="sidebar-custom-container position-fixed   col-md-4 col-sm-12 ">
+            <div class="row px-4 bg-white" style="border-radius: 20px 0 0 20px;" >
+                <div class="sidebar-custom-sm " style="height:70%; z-index: 22; right: 0;">
+                    <div class="d-flex row col-md-12 col-sm-12 sticky-top bg-white" >
+                        <button onclick="closeCartMenu();" class="pull-left" style="background:none; outline: none; border: none;"><i class="fas fa-times"></i></button>
+                        <h4 class="pt-3 text-capitalize text-center color-orange-shoppy pb-2 mx-auto ">Ordered items ({{ carts.count }})</h4>
+                    </div>
+
+                    <div class="cartitems w-100 pt-3" >
+                        {% for cart in carts %}
+                            <div class="col-sm-12 col-md-12 row checkout-product px-sm-0  px-2 mb-2 ">
+                                <div class="col-sm-4 col-md-4 col-lg-4 p-0  imagescrollimg-custom">
+                                    <img src="{{ cart.product.featured_url.url }}" alt="">
+                                </div>
+                                <div class="col-sm-7 col-md-7 col-lg-7">
+                                    <h3 class="title-sm text-capitalize">{{ cart.product.name|truncatechars:26 }}</h3>
+                                    <span class="title-xm">{{ cart.product.unit_cost|floatformat:1|intcomma }} kshs</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="mt-5 divider-custom"></div>
+
+                        <div class="  totals col-sm-12 row d-flex flex-column justify-content-center mb-4  m-0">
+
+                            <span class="sub-totals-checkout py-2 d-flex">
+                                <span class="mr-auto text-dark"> Total Cost</span>
+                                Ksh {{total|floatformat|intcomma}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'Shoppy:shoppy-checkout' %}" method="POST">
+            {% csrf_token %}
+            <div class="col-sm-12 row px-5 d-flex justify-content-center">
+                 <!-- Editable table -->
+                    <div class="card cart-container">
+                      <h3 class="card-header text-left cart-header-text text-uppercase py-4">CheckOut</h3>
+                      <div class="card-body cart-table-body">
+                        <div id="table" class="table-editable">
+                            <div class=" row col-sm-12  d-flex justify-content-end">
+                                <span class=" mb-3 mr-2 d-flex">
+                                    <a href="{% url "Shoppy:shoppy-cart" %}" class="btn btn-outline-warning">Back To Cart</a>
+                                    <span id="showmenubutton" onclick="showCartMenu()" class="d-md-none d-sm-block d-xs-block ml-3 btn btn-secondary p-2"><i class="mr-2 fa  fa-shopping-cart"></i> View your cart</span>
+                                </span>
+
+                            </div>
+                            <div class=" col-sm-12" style="height: 900px">
+                                <div class="row d-md-flex">
+                                    <div class="col-md-8 p-0 m-0 col-sm-12 animated  fadeInLeftBig">
+                                        <div class="bs-example">
+                                            <div style="max-width: 100%" class="accordion accordion-custom " id="accordionExample">
+                                                <div class="card">
+                                                    <div class="card-header accordion-card-heading" id="headingOne">
+                                                        <h2 class="mb-0">
+                                                            <button aria-expanded="true" type="button" class="btn btn-link accordion-header-text" data-toggle="collapse" data-target="#collapseOne"><em class="fas fa-truck-loading mr-2 "></em> Checkout Details</button>
+                                                        </h2>
+                                                    </div>
+                                                    <div id="collapseOne" class="collapse rounded show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                                        <div class="card-body  ">
+                                                            <div class=" p-4">
+                                                                <div class="col-sm-12 row">
+                                                                    <p class="product-features-text">{{ product.long_description }}</p>
+                                                                </div>
+
+                                                                <div class="col-sm-12 row py-4">
+                                                                    <h3 class="my-3">Personal Details</h3>
+                                                                    <div class="row w-100">
+                                                                        <div class="col-sm-6 ">
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputEmail1">First Name <sup style="color: var(--accent_color); font-size: 15px;">*</sup></label>
+                                                                                <input required name="first_name" value="{{ request.user.first_name }}" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" >
+                                                                                <small id="emailHelp" class="form-text text-muted text-capitalize">The First Name You Registerd with.</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 ">
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputEmail3">Last Name <sup style="color: var(--accent_color); font-size: 15px;">*</sup></label>
+                                                                                <input required name="last_name" value="{{ request.user.last_name }}" type="text" class="form-control" id="exampleInputEmail3" aria-describedby="emailHelp3" >
+                                                                                <small id="emailHelp3" class="form-text text-muted text-capitalize">The Last Name You Registerd with.</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12 ">
+                                                                            <div class="form-group number-input-custom w-100">
+                                                                                <label for="exampleInputEmail1">Phone Number <sup style="color: var(--accent_color); font-size: 15px;">*</sup></label>
+                                                                                <input required name="phone_number" value="{{  buyer.phone_number  }}" type="tel" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Phone Number">
+                                                                                <small id="emailHelp" class="form-text text-muted text-capitalize">Enter Your phone no you will like us to call You</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <input type="number" name="total" hidden value="{{total|floatformat}}">
+                                                                    </div>
+
+                                                                    <h3 class="my-3">Delivery</h3>
+                                                                    <div class="row w-100">
+                                                                        <div class="col-sm-12">
+                                                                            <div class="row w-100 m-0">
+                                                                                <div class="form-group mb-3 w-100">
+                                                                                  <label for="inputGroupSelect01">Region <sup style="color: var(--accent_color); font-size: 15px;">*</sup></label>
+                                                                                  <select onchange="change_total(this);" name="region" id="inputGroupSelect01" class="selectpicker form-control" required  >
+                                                                                      <option value=""> Choose Your Preferred Delivery Region</option>
+                                                                                    {% for region in regions %}
+                                                                                        <option data-price="{{ region.region_cost }}" value="{{ region.id }}">{{ region.name|title }} approximately ({{ region.region_cost|intcomma|floatformat:0 }}) Ksh</option>
+                                                                                    {% endfor %}
+                                                                                  </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12">
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputEmail3d">Delivery Address</label>
+                                                                                <input name="address" placeholder="Eg Buruburu phase 1, house number 304."  type="text" class="form-control" id="exampleInputEmail3d" aria-describedby="emailHelp3d" >
+                                                                                <small id="emailHelp3d" class="form-text text-muted text-capitalize">Eg Buruburu phase 1, house number 304.</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {% if voucher.count > 0 %}
+                                                                    <div class="col-sm-12 p-0">
+                                                                        <h3 class="my-3">Apply For Coupon</h3>
+                                                                        <div class="row w-100">
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                    <label for="exampleInputEmail1">Coupon</label>
+                                                                                    <input  maxlength="5" onkeyup="checkVoucher(this);" name="voucher"  type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" >
+                                                                                    <small id="voucherHelp" class="form-text text-muted text-capitalize">Enter the coupon code.
+                                                                                        <div id="" style="display:none;" class="spinner-border text-warning voucherspinner"></div>
+                                                                                    </small>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                        <script>
+                                                                            function checkVoucher(event){
+                                                                                var vouchervalue = event.value;
+                                                                                var smalltxt = document.getElementById('voucherHelp');
+                                                                                var voucherspinner = $('.voucherspinner');
+                                                                                voucherspinner.show();
+                                                                                if (vouchervalue.length === 5){
+                                                                                    voucherspinner.show();
+                                                                                    $.ajax({
+                                                                                    type : 'POST',
+                                                                                    data : {
+                                                                                        'voucher' : vouchervalue,
+                                                                                    },
+                                                                                    url :"{% url 'Shoppy:check_voucher_if_it_exists'  %}",
+                                                                                    success : function(response) {
+
+                                                                                        if (response.results === "valid") {
+                                                                                            voucherspinner.hide() ;
+                                                                                            smalltxt.innerHTML = response.response;
+                                                                                            smalltxt.classList.remove('text-muted');
+                                                                                            smalltxt.classList.add('text-success');
+
+
+                                                                                        }
+                                                                                        else if(response.results ==="invalid") {
+                                                                                            voucherspinner.hide() ;
+                                                                                            smalltxt.innerHTML = response.response;
+                                                                                            smalltxt.classList.remove('text-muted');
+                                                                                            smalltxt.classList.add('text-danger');
+
+
+                                                                                        }
+                                                                                        else if(response.results ==="invalid_voucher") {
+                                                                                            voucherspinner.hide() ;
+
+                                                                                            smalltxt.innerHTML = response.response;
+                                                                                            smalltxt.classList.remove('text-muted');
+                                                                                            smalltxt.classList.add('text-danger');
+
+
+                                                                                        }
+                                                                                    },
+                                                                                    error : function(request,error)
+                                                                                    {
+                                                                                       console.log(error)
+                                                                                    }
+                                                                                });
+                                                                                }
+                                                                                else {
+                                                                                    voucherspinner.hide() ;
+
+                                                                                    smalltxt.innerHTML='Enter the voucher code.';
+                                                                                    smalltxt.classList.remove('text-success');
+                                                                                    smalltxt.classList.remove('text-danger');
+                                                                                    smalltxt.classList.add('text-muted');
+                                                                                }
+                                                                            }
+                                                                        </script>
+                                                                    {% endif %}
+                                                                     <div class="col-sm-12">
+                                                                        <div class="row">
+                                                                            <button class=" pointer product-button" >Make order</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="main-sidebar-checkout" class="animated fadeInRightBig main-sidebar-checkout  d-sm-none d-xs-none d-md-block col-md-4 col-sm-12">
+                                        <div class="row px-4">
+                                            <h4 class="text-capitalize text-center color-orange-shoppy pb-2 mx-auto ">Ordered items ({{ carts.count }})</h4>
+                                            <div class="sidebar-custom bg-white">
+                                                <div class="cartitems w-100">
+                                                    {% for cart in carts %}
+                                                        <div class="col-sm-12 row checkout-product px-2 mb-2">
+                                                            <div class="col-sm-4 p-0  imagescrollimg-custom">
+                                                                <img src="{{ cart.product.featured_url.url }}" alt="">
+                                                            </div>
+                                                            <div class="col-sm-7">
+                                                                <h3 class="title-sm text-capitalize">{{ cart.product.name|truncatechars:26 }}</h3>
+                                                                <span class="title-xm">{{ cart.product.unit_cost|floatformat:1|intcomma }} kshs</span>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                    <div class="mt-5 divider-custom"></div>
+
+                                                    <div class="  totals col-sm-12 row d-flex flex-column justify-content-center mb-4  m-0">
+                                                        <span class="sub-totals-checkout py-2 d-flex">
+                                                            <span class="mr-auto text-dark">Cost</span>
+                                                            Ksh <span id="payablecost" class="mx-2" data-tipp="{{ buyer.cart_total }}">{{buyer.cart_total|floatformat:0|intcomma}}</span>
+                                                        </span>
+                                                        <span id="shipping" class="sub-totals-checkout py-2 d-flex">
+                                                            <span class="mr-auto text-dark"> Shipping Cost</span>
+                                                            + Ksh <span class="mx-2" id="shippingcost">0</span>
+                                                        </span>
+                                                        <span id="totalwrapper" class="sub-totals-checkout py-2 d-flex" style="color: var(--accent_color)">
+                                                            <span class="mr-auto "  >Total Cost</span>
+                                                            Ksh <span class="mx-2" id="total">{{buyer.cart_total|floatformat:0|intcomma}}</span>
+                                                        </span>
+
+                                                        <script>
+                                                            function numberWithCommas(x) {
+                                                                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                                            }
+
+                                                            function change_total(event) {
+                                                                var paycost = document.querySelector('#payablecost');
+                                                                var shippincosttext = document.querySelector('#shippingcost');
+                                                                var total = document.querySelector('#total');
+
+
+                                                                var ship_value = event.options[event.selectedIndex].getAttribute('data-price');
+                                                                shippincosttext.innerHTML = numberWithCommas(ship_value);
+
+                                                                var paycostvalue = paycost.dataset.tipp;
+                                                                var totalcostfvalue = Number(paycostvalue) + Number(ship_value);
+                                                                total.innerHTML = numberWithCommas(totalcostfvalue);
+
+
+
+
+
+                                                            }
+                                                        </script>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                <!-- Editable table -->
+            </div>
+        </form>
+
+{% endblock content %}
+{% block scripts %}
+    <script>
+        var sidebar_js = document.getElementById('sidebar-js');
+        var showmenubutton = document.getElementById('showmenubutton');
+        function showCartMenu() {
+            sidebar_js.style.right =0 +'%';
+            sidebar_js.style.transition = 1 +'s';
+            showmenubutton.style.display = 'none';
+            showmenubutton.style.transition = 1 +'s';
+        }
+        function closeCartMenu() {
+            if(sidebar_js.style.right === 0 + '%'){
+                window.addEventListener("click", function () {
+                    sidebar_js.style.right = -200 + '%';
+                    sidebar_js.style.transition = 1 +'s';
+                    showmenubutton.style.display = 'block';
+                    showmenubutton.style.transition = 1 +'s';
+                });
+                sidebar_js.style.right = -200 + '%';
+                sidebar_js.style.transition = 1 +'s';
+                showmenubutton.style.display = 'block';
+                showmenubutton.style.transition = 1 +'s';
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends 'aaa_layout.html' %}
+{% load tz %}
+{% load static %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+
+{% endblock links %}
+{% block content %}
+ <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+    <div class="row">
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                <em class="fa fa-home"></em>
+                </a>
+            </li>
+            <li class="active">Voucher</li>
+        </ol>
+    </div><!--/.row-->
+   <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Voucher</h1>
+        </div>
+   </div><!--/.row-->
+    {% for voucher in vouchers %}
+        <!-- Modal -->
+              <div class="modal fade " id="up{{ voucher.id }}" role="dialog">
+                <div class="modal-dialog modal-lg ">
+                  <div class="modal-content ">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit</h4>
+                    </div>
+                    <div class="modal-body">
+                       <form action="{% url 'ShoppyAdmin:editvoucher' voucher.id %}" method="POST" >
+                        {% csrf_token %}
+                        <div>
+                            <div class="form-group marginY" >
+                               <div class="form-group">
+                                    <label class="custom-control" for="event_name">Event:<sup class="text-danger">*</sup></label>
+                                   <input placeholder="Event Name" value="{{ voucher.event }}" name="event" type="text" class="form-control" id="event_name" required>
+                               </div>
+                            </div>
+                            <div class="form-group marginY">
+                               <div class="form-group">
+                                    <label class="custom-control" for="saddcsd">Amount:<sup class="text-danger">*</sup></label>
+                                    <input name="amount" value="{{ voucher.amount }}" placeholder="Voucher Amount"  type="number" class="form-control" id="saddcsd" required>
+                               </div>
+                            </div>
+                            <div class="form-group marginY">
+                               <div class="form-group">
+                                    <label class="custom-control" for="region_cost">Start Date:<sup class="text-danger">*</sup></label>
+                                    <input value="{{ voucher.start_time|date:'Y-m-d' }}" name="start_date" placeholder="Voucher Start Date"  type="date" class="form-control" id="start_date" required>
+                               </div>
+                            </div>
+                            <div class="form-group marginY">
+                               <div class="form-group">
+                                    <label class="custom-control" for="region_cost">End Date:<sup class="text-danger">*</sup></label>
+                                    <input value="{{ voucher.end_time|date:'Y-m-d' }}" name="end_date" placeholder="Voucher End Date"  type="date" class="form-control" id="region_cost" required>
+                               </div>
+                            </div>
+                            <div class="form-group marginY">
+                                  <label class="control-label py-2" for="quantity">Number of users<sup class="text-danger">*</sup></label>
+                                  <div class="slider-container" style="margin-left: 9px;">
+                                    <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                    <input required name="no_of_users" id="quantity" value="{{voucher.no_of_users}}" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number"  >
+                                    <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                  </div>
+                            </div>
+                            <div class="">
+                                <button type="submit" class="btn btn-success marginY"> Update</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+    {% endfor %}
+   <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading panel-warning-custom">
+                    All Voucher
+                    <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                </div>
+                <div class="panel-body">
+                    <div class="canvas-wrapper">
+                        <div class="main-chart" id="line-chart" height="200" width="600">
+                            <form class="w-100" action="{% url 'ShoppyAdmin:addvoucher' %}" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="col-sm-6 marginY" >
+                                   <div class="form-group">
+                                        <label class="custom-control" for="event_name">Event:<sup class="text-danger">*</sup></label>
+                                       <input placeholder="Event Name" name="event" type="text" class="form-control" id="event_name" required>
+                                   </div>
+                                </div>
+                                <div class="col-sm-6 marginY">
+                                   <div class="form-group">
+                                        <label class="custom-control" for="saddcsd">Amount:<sup class="text-danger">*</sup></label>
+                                        <input name="amount" placeholder="Voucher Amount"  type="number" class="form-control" id="saddcsd" required>
+                                   </div>
+                                </div>
+                                <div class="col-sm-6 marginY">
+                                   <div class="form-group">
+                                        <label class="custom-control" for="region_cost">Start Date:<sup class="text-danger">*</sup></label>
+                                        <input name="start_date" placeholder="Voucher Start Date"  type="date" class="form-control" id="start_date" required>
+                                   </div>
+                                </div>
+                                <div class="col-sm-6 marginY">
+                                   <div class="form-group">
+                                        <label class="custom-control" for="region_cost">End Date:<sup class="text-danger">*</sup></label>
+                                        <input name="end_date" placeholder="Voucher End Date"  type="date" class="form-control" id="region_cost" required>
+                                   </div>
+                                </div>
+                                <div class="col-sm-6 marginY">
+                                      <label class="control-label py-2" for="quantity">Number of users<sup class="text-danger">*</sup></label>
+                                      <div class="slider-container" style="margin-left: 9px;">
+                                        <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                        <input required name="no_of_users" id="quantity" value="1" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number"  >
+                                        <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                      </div>
+                                </div>
+                                <div class="col-sm-12 row">
+                                    <button type="submit" class="btn btn-success marginY"><i class="fas fa-plus-circle"></i> Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   </div><!--/.row-->
+
+   <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading panel-warning-custom">
+                    All Vouchers
+
+                    <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                <div class="panel-body">
+                    <div class="canvas-wrapper">
+                        <div class="main-chart" id="line-chart" height="200" width="600">
+                            <table id="" class="example table table-striped table-bordered" style="width:100%;">
+                                <thead>
+                                    <tr class="text-capitalize">
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Voucher Number</th>
+                                        <th>Amount</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>No of user</th>
+                                        <th>Date Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for voucher in vouchers %}
+                                        <tr class="text-center ">
+                                            <td class="tb-data">{{ forloop.counter }}</td>
+                                            <td class="tb-data font-weight-bolder text-capitalize">{{ voucher.event }}</td>
+                                            <td class="tb-data">{{ voucher.code }}</td>
+                                            <td class="tb-data">{{ voucher.amount|intcomma }} Ksh</td>
+                                            <td class="tb-data">{{ voucher.start_time }}</td>
+                                            <td class="tb-data">{{ voucher.end_time }}</td>
+                                            <td class="tb-data">{{ voucher.no_of_users }}</td>
+                                            <td class="tb-data">{{ voucher.created_at|naturaltime }}</td>
+                                            <td class="tb-data">
+                                                <a data-toggle="modal" data-target="#dv{{ voucher.id }}" href="#" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                                                <a data-toggle="modal" data-target="#up{{ voucher.id }}" href="" class="btn btn-success" >
+                                                    <i class="fas fa-pencil-alt"></i> Edit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          {% for voucher in vouchers %}
+              <!-- Modal -->
+              <div class="modal fade " id="dv{{ voucher.id }}" role="dialog">
+                <div class="modal-dialog modal-sm ">
+                  <div class="modal-content ">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Voucher Delete Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                      <h4>Are you sure you want to delete {{ voucher.event }} </h4>
+                    </div>
+                    <div class="modal-footer">
+                      <a href="{% url 'ShoppyAdmin:deletevoucher' voucher.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+{#                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
+                    </div>
+                  </div>
+                </div>
+              </div>
+          {% endfor %}
+
+    </div><!--/.row-->
+
+</div>
+
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script>
+        $('.btn-num-product-down').on('click', function(e){
+        e.preventDefault();
+        var numProduct = Number($(this).next().val());
+        if(numProduct > 1) $(this).next().val(numProduct - 1);
+        });
+
+        $('.btn-num-product-up').on('click', function(e){
+            e.preventDefault();
+            var numProduct = Number($(this).prev().val());
+            $(this).prev().val(numProduct + 1);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        $(document).ready( function () {
+             $('.table').DataTable();
+        } );
+    </script>
+{% endblock scripts %}

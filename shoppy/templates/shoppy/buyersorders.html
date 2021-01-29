@@ -1,0 +1,63 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/cart_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product_card.css' %}">
+{% endblock links %}
+{% block content %}
+
+    <div class=" col-sm-11 mx-auto"  >
+        <div class="card-header text-left cart-header-text text-uppercase py-4 w-100">Pending Orders</div>
+
+        <div class="row w-100" style="height: 1000px; overflow: auto;">
+            <div class="col">
+                <table class="table table-hover">
+                  <thead class="thead-dark" >
+                    <tr style="height: 62px;">
+                      <th scope="col">#</th>
+                      <th scope="col">Order Number</th>
+                      <th scope="col">Products</th>
+                      <th scope="col">Cost</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Amount Paid</th>
+                      <th scope="col">Date Ordered</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for checkout in checkouts %}
+                    <tr style="height: 62px;" class=" {% if forloop.counter|divisibleby:2 %} animated fadeInLeftBig {% else %} animated fadeInRightBig {% endif %}">
+                      <th scope="row" style="width: 42px;">{{ forloop.counter }}</th>
+
+                      <td>{{ checkout.reference_code }}</td>
+                      <td>{{ checkout.order_prod_count }}</td>
+                      <td>Kshs {{ checkout.total|floatformat:0|intcomma }}</td>
+                      <td>
+                          <span class="{% if checkout.status  == 'PENDING' %} text-danger {% else %} text-success {% endif %}">{{ checkout.status }}</span>
+                      </td>
+                      <td>Kshs {{ checkout.amount_paid|floatformat:0|intcomma }}</td>
+                      <td>{{ checkout.created_at|naturaltime }}</td>
+                      <td style="width: 266px;">
+                          <a class="btn" style="background-color: var(--accent_color); color: white;" href="{% url 'Shoppy:orders_payment_opions' checkout.id %}">Payment Details</a>
+                          <a class="btn btn-success"  href="{% url 'Shoppy:all_buyers_order_products' checkout.reference_code %}">View Products</a>
+                      </td>
+
+
+                    </tr>
+                  {% endfor %}
+
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% block scripts %}
+
+{% endblock %}
+
+
+{% endblock content %}

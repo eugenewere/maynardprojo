@@ -1,0 +1,129 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/cart_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product_card.css' %}">
+{% endblock links %}
+{% block content %}
+
+    <div class=" col-sm-11 mx-auto" style="height: 1000px; overflow: auto;" >
+        <div class="row w-100">
+            <div class="card-header text-left cart-header-text text-uppercase py-4 w-100">Product Ordered</div>
+            <div class="row ">
+                {% for product in products %}
+                     <!-- Modal -->
+                    <div  class="modal fade" id="pbi{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                        <div class="modal-content" style="border: 2px solid var(--orangetheme);">
+                        <button type="button" class="close d-flex justify-content-end" data-dismiss="modal" aria-label="Close">
+                              <span class="btn btn-warning m-2 text-white" style="font-size: 20px;" aria-hidden="true">&times;</span>
+                            </button>
+                          <div class="modal-body row">
+                              <div class="col-md-5 col-sm-12 d-flex flex-wrap justify-content-center">
+                                 {% for image in product.images %}
+                                      <div style="width: 200px; height: 200px; overflow: hidden; ">
+                                          <img style="width: 100%; height: 100%;" src="{{ image.image.url }}" alt="">
+                                      </div>
+                                 {% endfor  %}
+                              </div>
+                              <div class="col-md-7 col-sm-12">
+                              <h4 class="row text-body">{{ product.name|title }}</h4>
+                              <p style="font-weight: 300; font-size: 19px;">
+                                  {{ product.long_description|safe|escape }}
+                              </p>
+                          </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+               {% endfor %}
+               {% for product in products %}
+                    <div class="m-2 product product-single">
+                        <div class="product-thumb">
+                            <div class="product-label text-center">
+
+
+                            </div>
+
+                            <button class="main-btn quick-view" data-toggle="modal" data-target="#pbi{{ product.id }}"><i class="fa fa-search-plus"></i> Quick view</button>
+                            <img  src="{{ product.featured_url.url }}" alt="">
+                        </div>
+                        <div class="product-rating">
+                           {% if product.id|average_ratings >= 5 %}
+                               <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+
+                           {% elif product.id|average_ratings >= 4 %}
+                               <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="far fa-star"></i>
+
+                           {% elif product.id|average_ratings >= 3 %}
+                               <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star-o empty"></i>
+
+                           {% elif product.id|average_ratings >= 2 %}
+                               <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star-o empty"></i>
+
+                           {% elif product.id|average_ratings >= 1 %}
+                               <i class="fa fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                           {% else %}
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                           {% endif %}
+                        </div>
+                        <div class="product-body">
+                              {% if  product.price_after_offer and product.id|product_on_offer %}
+                                    <h3 class="product-price" style=" font-size: 19px; display: flex; flex-direction:  column;">
+                                          Kshs {{ product.price_after_offer|floatformat:0|intcomma }}
+                                         <del class="product-old-price">Kshs {{ product.unit_cost_inclusive_of_vat|floatformat:0|intcomma }} </del>
+                                     </h3>
+                             {% else %}
+                                    <h3 class="product-price" style="font-size: 19px;">
+                                         Kshs {{ product.price_after_offer|floatformat:0|intcomma }}
+                                     </h3>
+                             {% endif %}
+                            <h2 class="product-name text-decoration-none"><a href="#">{{ product.name|title }}</a></h2>
+                            <div class="product-btns">
+
+
+
+
+                                <a href="{% url 'Shoppy:shoppy_product_details' product.id %}"><button class="main-btn icon-btn"><i class="fa fa-eye"></i></button></a>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor  %}
+            </div>
+        </div>
+    </div>
+
+{% block scripts %}
+
+{% endblock %}
+
+
+{% endblock content %}
