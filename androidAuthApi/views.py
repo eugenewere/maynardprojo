@@ -745,7 +745,7 @@ def getShortCodeSMS(request):
         random_code = get_random_string(length=6, allowed_chars='123456789')
         appKey = request.data.get("appSignature")
         new_phone_number = f"{254}{phonenumber[-9:]}"
-        print(random_code)
+        # print(random_code)
 
         # Initialize a service e.g. SMS
         sms = africastalking.SMS
